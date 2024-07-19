@@ -1,6 +1,7 @@
 import time
 import asyncio
 from telethon.sync import TelegramClient
+import codecs
 
 class TelegramForwarder:
     def __init__(self, api_id, api_hash, phone_number):
@@ -19,12 +20,12 @@ class TelegramForwarder:
 
         # Get a list of all the dialogs (chats)
         dialogs = await self.client.get_dialogs()
-        chats_file = open(f"chats_of_{self.phone_number}.txt", "w")
-        # Print information about each chat
-        for dialog in dialogs:
-            print(f"Chat ID: {dialog.id}, Title: {dialog.title}")
-            chats_file.write(f"Chat ID: {dialog.id}, Title: {dialog.title} \n")
-          
+        with codecs.open("All-Telegram-Chat-IDs.txt", "w", "utf-8") as chats_file:
+            # Print information about each chat
+            for dialog in dialogs:
+                chat_info = f"Chat ID: {dialog.id}, Title: {dialog.title}"
+                print(chat_info)
+                chats_file.write(chat_info + "\n")
 
         print("List of groups printed successfully!")
 
@@ -54,11 +55,10 @@ class TelegramForwarder:
 
                         print("Message forwarded")
                 else:
-                        # Forward the message to the destination channel
-                        await self.client.send_message(destination_channel_id, message.text)
+                    # Forward the message to the destination channel
+                    await self.client.send_message(destination_channel_id, message.text)
 
-                        print("Message forwarded")
-
+                    print("Message forwarded")
 
                 # Update the last message ID
                 last_message_id = max(last_message_id, message.id)
